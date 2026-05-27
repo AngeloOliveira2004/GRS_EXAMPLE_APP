@@ -4,21 +4,7 @@ import time
 from typing import Final
 
 from flask import Flask, Response, jsonify, request
-from dotenv import dotenv_values
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
-
-
-def _load_env_files() -> None:
-    initial_keys = set(os.environ.keys())
-
-    for key, value in dotenv_values(".env").items():
-        if value is None or key in initial_keys:
-            continue
-
-        os.environ[key] = value
-
-
-_load_env_files()
 
 APP_COLOR: Final[str] = os.getenv("APP_COLOR", "blue")
 APP_VERSION: Final[str] = os.getenv("APP_VERSION", "v1")
@@ -55,12 +41,16 @@ def record_metrics(response: Response) -> Response:
         status = str(response.status_code)
 
         REQUEST_COUNT.labels(
+            service=APP_COLOR,
+            version=APP_VERSION,
             method=request.method,
             endpoint=endpoint,
             status=status,
         ).inc()
 
         REQUEST_DURATION.labels(
+            service=APP_COLOR,
+            version=APP_VERSION,
             method=request.method,
             endpoint=endpoint,
             status=status,
@@ -75,19 +65,25 @@ def index():
 
     if SIMULATED_ERROR_RATE > 0 and random.random() < SIMULATED_ERROR_RATE:
         return jsonify(
+            color=APP_COLOR,
+            version=APP_VERSION,
             status="error",
-            message="simulated Application failure",
+            message="simulated blue application failure",
         ), 500
 
     return jsonify(
+        color=APP_COLOR,
+        version=APP_VERSION,
         status="ok",
-        message="Application is serving stable production traffic.",
+        message="Blue application is serving stable production traffic.",
     )
 
 
 @app.get("/health")
 def health():
     return jsonify(
+        color=APP_COLOR,
+        version=APP_VERSION,
         status="healthy",
     )
 
