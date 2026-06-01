@@ -8,9 +8,9 @@ from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_
 
 APP_COLOR: Final[str] = os.getenv("APP_COLOR", "blue")
 APP_VERSION: Final[str] = os.getenv("APP_VERSION", "v1")
-_error_rate_env = float(os.getenv("SIMULATED_ERROR_RATE", "30"))
+_error_rate_env = float(os.getenv("SIMULATED_ERROR_RATE", "0"))
 SIMULATED_ERROR_RATE: Final[float] = _error_rate_env / 100.0 if _error_rate_env > 1.0 else _error_rate_env
-SIMULATED_LATENCY_MS: Final[int] = int(os.getenv("SIMULATED_LATENCY_MS", "25"))
+SIMULATED_LATENCY_MS: Final[int] = int(os.getenv("SIMULATED_LATENCY_MS", "0"))
 
 app = Flask(__name__)
 
